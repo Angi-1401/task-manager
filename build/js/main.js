@@ -27,6 +27,7 @@ class TaskManager {
    */
   addTask(task) {
     this.tasks.push(task);
+    localStorage.setItem("tasks", JSON.stringify(this.tasks)); // Save the tasks to localStorage
     this.renderTasks();
   }
 
@@ -38,6 +39,7 @@ class TaskManager {
     const index = this.tasks.findIndex((task) => task.title === name);
     if (index !== -1) {
       this.tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(this.tasks)); // Save the tasks to localStorage
     }
     this.renderTasks();
   }
@@ -91,11 +93,39 @@ class TaskManager {
   }
 }
 
+/**
+ * Checks if the task form fields are filled in. If any of the fields is empty,
+ * an alert is shown and the function returns false. Otherwise, it returns true.
+ */
+function validateInput() {
+  const title = document.getElementById("title").value.trim();
+  const description = document.getElementById("description").value.trim();
+  const date = document.getElementById("date").value.trim();
+
+  if (title === "" || description === "" || date === "") {
+    alert("Please, fill in all the fields.");
+    return false;
+  }
+  return true;
+}
+
 // Create a new instance of the TaskManager class
 const taskManager = new TaskManager();
 
+// Load tasks from localStorage
+const tasks = JSON.parse(localStorage.getItem("tasks"));
+if (tasks) {
+  taskManager.tasks = tasks;
+  taskManager.renderTasks();
+}
+
 // Event listener for the "Add task" button
 document.getElementById("add-task").addEventListener("click", () => {
+  // Validate the inputs
+  if (!validateInput()) {
+    return;
+  }
+
   // Get the task details from the input fields
   const title = document.getElementById("title").value;
   const description = document.getElementById("description").value;
